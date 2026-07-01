@@ -21,6 +21,7 @@ int main() {
         return 1;
     }
 
+    //Bla bla bla
     SDL_Event e;
     bool quit = false;
 
