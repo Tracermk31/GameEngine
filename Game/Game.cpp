@@ -1,62 +1,47 @@
-#include "../Engine/Engine.cpp"
+#include "Engine.h"
 #include "SDL3/SDL.h"
-
 #include <iostream>
 
+short SCREEN_WIDTH = 1920;
+short SCREEN_HEIGHT = 1080;
+
 int main() {
-    SDL_Init(SDL_INIT_VIDEO);
+    ChiefEngine::Renderer renderer;
+    renderer.Initialize("ChiefEngine", SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    SDL_Window* window = SDL_CreateWindow("SDL3 Project", 1280, 1024, 0);
-    if (window == nullptr) {
-        std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return 1;
-    }
-
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
-    if (renderer == nullptr) {
-        std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return 1;
-    }
-
-    //Bla bla bla
     SDL_Event e;
-    bool quit = false;
+    bool running = true;
 
-    // Define a rectangle
-    SDL_FRect greenSquare{ 270, 190, 200, 200 };
-
-    while (!quit) {
+    while (running) {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_EVENT_QUIT) {
-                quit = true;
+                running = false;
             }
         }
+        
+        SDL_FRect rectangle{
+            100, 
+            300, 
+            rand() % (SCREEN_WIDTH - 100), 
+            rand() % (SCREEN_HEIGHT - 300)};
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Set render draw color to black
-        SDL_RenderClear(renderer); // Clear the renderer
+        renderer.SetColor(0, 0, 0); // Set render draw color to black
+        renderer.Clear(); // Clear the renderer 
 
-
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Set render draw color to green
-
-        for (short i = 0; i < 1000; i++) {
-            SDL_RenderPoint(renderer, rand() % 1280, rand() % 1024);
+        for (short i = 0; i < 20; i++) {
+            renderer.SetColor(rand() % 255, rand() % 255, rand() % 255);
+            renderer.DrawPoint(rand() % SCREEN_WIDTH, rand() % SCREEN_HEIGHT);
+            renderer.DrawLine(100, 100, rand() % SCREEN_WIDTH, rand() % 200);
+            rectangle.w = rand() % (SCREEN_WIDTH - 100);
+            rectangle.h = rand() % (SCREEN_HEIGHT - 300);
+            renderer.DrawRect(&rectangle);
         }
 
-        SDL_RenderFillRect(renderer, &greenSquare); // Render the rectangle
+        renderer.DrawText(30, 30, "Hello World!");
 
-        SDL_SetRenderDrawColor(renderer, rand() % 255, rand() % 255, rand() % 255, 255);
-
-        SDL_RenderDebugText(renderer, 30, 30, "Hello World!");
-
-        SDL_RenderPresent(renderer); // Render the screen
+        renderer.Present(); // Render the screen
     }
 
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-
+    renderer.ShutDown();
     return 0;
 }
