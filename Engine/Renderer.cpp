@@ -28,6 +28,10 @@ namespace ChiefEngine {
         SDL_SetRenderDrawColor(m_renderer, red, green, blue, alpha);
     }
 
+    void Renderer::SetColorFloat(float red, float green, float blue, float alpha) {
+        SDL_SetRenderDrawColorFloat(m_renderer, red, green, blue, alpha);
+    }
+
     void Renderer::Clear() {
         SDL_RenderClear(m_renderer);
     }
