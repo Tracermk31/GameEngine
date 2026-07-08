@@ -42,10 +42,8 @@ int main() {
             }
         }
 
+        // ENGINE
         input.Update();
-        if (input.GetKeyDown(SDL_SCANCODE_SPACE)) std::cout << "Down\n";
-        //if (input.GetKeyPressed(SDL_SCANCODE_SPACE)) std::cout << "Pressed\n";
-        //if (input.GetKeyReleased(SDL_SCANCODE_SPACE)) std::cout << "Released\n";
 
         // RENDER
         renderer.SetColor(0, 0, 0); // Set render draw color to black
