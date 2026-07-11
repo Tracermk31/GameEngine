@@ -2,31 +2,64 @@
 
 using namespace ChiefEngine;
 
-short SCREEN_WIDTH = 1920;
-short SCREEN_HEIGHT = 1080;
+float SCREEN_WIDTH = 1920.0f;
+float SCREEN_HEIGHT = 1200.0f;
+float SPEED = 0.01;
+
+struct Transform {
+    Vector2 position;
+    float rotation;
+    float scale;
+};
+
+class Actor {
+public:
+    Actor() = default;
+    Actor(const Transform& transform) : m_transform{ transform } {};
+
+    void Update(float dt) {
+        m_transform.position += (m_velocity * dt);
+
+        Math::Clamp(0.0f, SCREEN_WIDTH, m_transform.position.x);
+        Math::Clamp(0.0f, SCREEN_HEIGHT, m_transform.position.y);
+    }
+
+    void Draw(const Renderer& renderer) const {
+        renderer.SetColor(255, 255, 255);
+        renderer.DrawText(m_transform.position.x, m_transform.position.y, "Boo");
+    }
+
+    inline const Transform& GetTransform() const { return this->m_transform; }
+    void SetPosition(const Vector2& position) { m_transform.position = position; }
+    void SetRotation(float rotation) { m_transform.rotation = rotation; }
+    void SetScale(float scale) { m_transform.scale = scale; }
+
+    inline const Vector2& GetVelocity() const { return m_velocity; }
+    void SetVelocity(const Vector2& velocity) { m_velocity = velocity; }
+protected:
+    Transform m_transform;
+    Vector2 m_velocity = { 0.0f };
+};
 
 int main() {
     // INITIALIZATION
     ChiefEngine::Renderer renderer;
-    renderer.Initialize("ChiefEngine", SCREEN_WIDTH, SCREEN_HEIGHT);
+    renderer.Initialize("ChiefEngine", (short)SCREEN_WIDTH, (short)SCREEN_HEIGHT);
 
     Input input;
+    Time time;
     input.Initialize();
 
-    std::vector<Vector2> vector;
-    Vector2 vel = Vector2(2, 0);
+    Vector2 position{ SCREEN_WIDTH/2.0f, SCREEN_HEIGHT/2.0f };
 
-    for (short i = 0; i < 300; i++) {
-        vector.push_back(Vector2{ RandomFloat(SCREEN_WIDTH), RandomFloat(SCREEN_HEIGHT) });
-    }
+    //Actor player(Transform(position, 0.0f, 50.0f));
 
-    SDL_FRect rectangle{
-        50,
-        250,
-        RandomFloat(rectangle.x, SCREEN_WIDTH),
-        RandomFloat(rectangle.y, SCREEN_HEIGHT)};
+    std::vector<Vector2> points;
 
     SDL_Event event;
+
+    Vector2 velocity = { 0.0f };
+    Vector2 force = { 0.0f };
 
     // MAIN LOOP
     bool running = true;
@@ -42,25 +75,47 @@ int main() {
             }
         }
 
-        // ENGINE
         input.Update();
+        time.Tick();
+        float dt = time.getDeltaTime();
+
+        // INPUT
+        if (input.GetButtonDown(Input::MouseButton::LEFT)) {
+            if (points.empty()) {
+                points.push_back(input.GetMousePosition());
+            }
+            else {
+                Vector2 temp = points.back() - input.GetMousePosition();
+                if (temp.Length() > 30.0) {
+                    points.push_back(input.GetMousePosition());
+                }
+            }
+        }
+
+        if (input.GetButtonPressed(Input::MouseButton::RIGHT)) {
+            if (!points.empty()) {
+                points.pop_back();
+            }
+        }
+
+        //if (input.GetKeyDown(SDL_SCANCODE_A)) { force.x = -SPEED; }
+        //if (input.GetKeyDown(SDL_SCANCODE_D)) { force.x = +SPEED; }
+        //if (input.GetKeyDown(SDL_SCANCODE_W)) { force.y = -SPEED; }
+        //if (input.GetKeyDown(SDL_SCANCODE_S)) { force.y = +SPEED; }
+
+        //player.SetVelocity(player.GetVelocity() + (force * dt));
+        //player.Update(dt);
 
         // RENDER
         renderer.SetColor(0, 0, 0); // Set render draw color to black
         renderer.Clear(); // Clear the renderer 
 
-        for (size_t index = 0; index < vector.size(); index++) {
+        for (int index = 0; index < (int)(points.size()) - 1; index++) {
             renderer.SetColorFloat(RandomFloat(), RandomFloat(), RandomFloat());
-            renderer.DrawPoint(vector[index].x, vector[index].y);
-            vector[index] += vel;
-            renderer.DrawLine(100, 100, RandomFloat(SCREEN_WIDTH), RandomFloat(200));
-            rectangle.w = RandomFloat(SCREEN_WIDTH - rectangle.x);
-            rectangle.h = RandomFloat(SCREEN_HEIGHT - rectangle.y);
-            renderer.DrawRect(&rectangle);
+            renderer.DrawLine(points[index].x, points[index].y, points[index + 1].x, points[index + 1].y);
         }
 
-        renderer.DrawText(input.GetMousePosition().x, input.GetMousePosition().y, "Hello World!");
-
+        //player.Draw(renderer);
         renderer.Present(); // Render the screen
     }
 
