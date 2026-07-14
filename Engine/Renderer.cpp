@@ -1,9 +1,15 @@
 #include "pch.h"
 #include "Renderer.h"
+#include "Model.h"
+#include "Transform.h"
+
 #include <iostream>
 
 namespace ChiefEngine {
     bool Renderer::Initialize(const char* name, short windowWidth, short windowHeight) {
+        m_window_size.x = windowWidth;
+        m_window_size.y = windowHeight;
+
         SDL_Init(SDL_INIT_VIDEO);
 
         m_window = SDL_CreateWindow(name, windowWidth, windowHeight, 0);
@@ -67,6 +73,48 @@ namespace ChiefEngine {
 
     void Renderer::DrawLine(float x1, float y1, float x2, float y2) const {
         SDL_RenderLine(m_renderer, x1, y1, x2, y2);
+    }
+
+    void Renderer::DrawMesh(const class Mesh& mesh, const struct Transform& transform) const {
+        SetColor((Uint8)mesh.GetColor().r, (Uint8)mesh.GetColor().g, (Uint8)mesh.GetColor().b);
+
+        auto& points = mesh.GetPoints();
+        auto numPoints = mesh.GetPoints().size();
+
+        for (int index = 0; (index + 1) < numPoints; index++) {
+            Vector2 v1 = points[index];
+            Vector2 v2 = points[index + 1];
+
+            v1 *= transform.scale;
+            v2 *= transform.scale;
+
+            v1 += transform.position;
+            v2 += transform.position;
+
+            DrawLine(v1.x, v1.y,v2.x, v2.y);
+        }
+    }
+
+    void Renderer::DrawModel(const class Model& model, const struct Transform& transform) const {
+        for (auto mesh : model.GetMeshes()) {
+            SetColor((Uint8)mesh.GetColor().r, (Uint8)mesh.GetColor().g, (Uint8)mesh.GetColor().b);
+
+            auto& points = mesh.GetPoints();
+            auto numPoints = mesh.GetPoints().size();
+
+            for (int index = 0; (index + 1) < numPoints; index++) {
+                Vector2 v1 = points[index];
+                Vector2 v2 = points[index + 1];
+
+                v1 *= transform.scale;
+                v2 *= transform.scale;
+
+                v1 += transform.position;
+                v2 += transform.position;
+
+                DrawLine(v1.x, v1.y, v2.x, v2.y);
+            }
+        }
     }
 
     void Renderer::DrawText(float x, float y, const char* string) const {

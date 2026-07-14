@@ -1,4 +1,6 @@
 #pragma once
+
+#include "Vector2.h"
 #include <SDL3/SDL.h>
 
 namespace ChiefEngine {
@@ -18,8 +20,15 @@ namespace ChiefEngine {
 			void DrawRect(const SDL_FRect* rectangle) const;
 			void DrawLine(float x1, float y1, float x2, float y2) const;
 			void DrawText(float x, float y, const char* string) const;
+
+			void DrawMesh(const class Mesh& mesh, const struct Transform& transform) const;
+			void DrawModel(const class Model& model, const struct Transform& transform) const;
+
+			float getWindowWidth() const { return m_window_size.GetX(); }
+			float getWindowHeight() const { return m_window_size.GetY(); }
 		private:
 			SDL_Window* m_window = nullptr;
 			SDL_Renderer* m_renderer = nullptr;
+			Vector2 m_window_size = { 0.0 };
 	};
 }
