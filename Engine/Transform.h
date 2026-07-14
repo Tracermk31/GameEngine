@@ -5,7 +5,7 @@
 namespace ChiefEngine {
     struct Transform {
         Vector2 position;
-        float rotation;
-        float scale;
+        Vector2 rotation;
+        Vector2 scale;
     };
 }

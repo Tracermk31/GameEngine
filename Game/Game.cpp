@@ -17,8 +17,9 @@ int main() {
 
     std::vector<Vector2> points;
 
-    Mesh mesh { { Vector2{-3, 3,}, Vector2{ 3, 3 }, Vector2{0, 0}} , Color{255.0f, 255.0f, 255.0f} };
-    Model playerModel = std::vector<Mesh>{ mesh };
+    Model playerModel = std::vector<Mesh>{};
+
+    playerModel.AddMesh({ { Vector2{-3, 3,}, Vector2{ 3, 3 }, Vector2{0, 0}} , Color{255.0f, 255.0f, 255.0f} });
     Actor player(Transform{ Vector2{ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f }, 0.0f, 50.0f }, playerModel);
 
     SDL_Event event;
