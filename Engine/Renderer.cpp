@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "Model.h"
 #include "Transform.h"
+#include "EngineMath.h"
 
 #include <iostream>
 
@@ -75,25 +76,28 @@ namespace ChiefEngine {
         SDL_RenderLine(m_renderer, x1, y1, x2, y2);
     }
 
-    void Renderer::DrawMesh(const class Mesh& mesh, const struct Transform& transform) const {
-        SetColor((Uint8)mesh.GetColor().r, (Uint8)mesh.GetColor().g, (Uint8)mesh.GetColor().b);
+    //void Renderer::DrawMesh(const class Mesh& mesh, const struct Transform& transform) const {
+    //    SetColor((Uint8)mesh.GetColor().r, (Uint8)mesh.GetColor().g, (Uint8)mesh.GetColor().b);
 
-        auto& points = mesh.GetPoints();
-        auto numPoints = mesh.GetPoints().size();
+    //    auto& points = mesh.GetPoints();
+    //    auto numPoints = mesh.GetPoints().size();
 
-        for (int index = 0; (index + 1) < numPoints; index++) {
-            Vector2 v1 = points[index];
-            Vector2 v2 = points[index + 1];
+    //    for (int index = 0; (index + 1) < numPoints; index++) {
+    //        Vector2 v1 = points[index];
+    //        Vector2 v2 = points[index + 1];
 
-            v1 *= transform.scale;
-            v2 *= transform.scale;
+    //        v1 *= transform.scale;
+    //        v2 *= transform.scale;
 
-            v1 += transform.position;
-            v2 += transform.position;
+    //        v1 = v1.Rotate(transform.rotation);
+    //        v2 = v2.Rotate(transform.rotation);
 
-            DrawLine(v1.x, v1.y,v2.x, v2.y);
-        }
-    }
+    //        v1 += transform.position;
+    //        v2 += transform.position;
+
+    //        DrawLine(v1.x, v1.y,v2.x, v2.y);
+    //    }
+    //}
 
     void Renderer::DrawModel(const class Model& model, const struct Transform& transform) const {
         for (auto mesh : model.GetMeshes()) {
@@ -108,6 +112,9 @@ namespace ChiefEngine {
 
                 v1 *= transform.scale;
                 v2 *= transform.scale;
+
+                v1 = v1.Rotate(transform.rotation * Math::DEGREE_TO_RADIAN);
+                v2 = v2.Rotate(transform.rotation * Math::DEGREE_TO_RADIAN);
 
                 v1 += transform.position;
                 v2 += transform.position;

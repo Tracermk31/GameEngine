@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include "Player.h"
 
 using namespace ChiefEngine;
 
@@ -8,24 +9,16 @@ float SPEED = 1.0f;
 
 int main() {
     // INITIALIZATION
-    ChiefEngine::Renderer renderer;
-    renderer.Initialize("ChiefEngine", (short)SCREEN_WIDTH, (short)SCREEN_HEIGHT);
-
-    Input input;
-    Time time;
-    input.Initialize();
+    g_engine.Initialize();
 
     std::vector<Vector2> points;
 
     Model playerModel = std::vector<Mesh>{};
 
     playerModel.AddMesh({ { Vector2{-3, 3,}, Vector2{ 3, 3 }, Vector2{0, 0}} , Color{255.0f, 255.0f, 255.0f} });
-    Actor player(Transform{ Vector2{ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f }, 0.0f, 50.0f }, playerModel);
+    Player player(Transform{ Vector2{ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f }, 0.0f, 50.0f }, playerModel, 800.0f);
 
     SDL_Event event;
-
-    Vector2 velocity = { 0.0f };
-    Vector2 force = { 0.0f };
 
     // MAIN LOOP
     bool running = true;
@@ -41,51 +34,46 @@ int main() {
             }
         }
 
-        input.Update();
-        time.Tick();
-        float dt = time.getDeltaTime();
+        g_engine.Update();
+
+        float dt = g_engine.GetTime().getDeltaTime();
+
+        player.SetRotation(player.GetTransform().rotation + (90 * dt));
+        player.Update(dt, SCREEN_HEIGHT, SCREEN_WIDTH);
 
         // INPUT
-        if (input.GetButtonDown(Input::MouseButton::LEFT)) {
+        if (g_engine.GetInput().GetButtonDown(Input::MouseButton::LEFT)) {
             if (points.empty()) {
-                points.push_back(input.GetMousePosition());
+                points.push_back(g_engine.GetInput().GetMousePosition());
             }
             else {
-                Vector2 temp = points.back() - input.GetMousePosition();
+                Vector2 temp = points.back() - g_engine.GetInput().GetMousePosition();
                 if (temp.Length() > 30.0) {
-                    points.push_back(input.GetMousePosition());
+                    points.push_back(g_engine.GetInput().GetMousePosition());
                 }
             }
         }
 
-        if (input.GetButtonPressed(Input::MouseButton::RIGHT)) {
+        if (g_engine.GetInput().GetButtonPressed(Input::MouseButton::RIGHT)) {
             if (!points.empty()) {
                 points.pop_back();
             }
         }
 
-        if (input.GetKeyDown(SDL_SCANCODE_A)) { force.x = -SPEED; }
-        if (input.GetKeyDown(SDL_SCANCODE_D)) { force.x = +SPEED; }
-        if (input.GetKeyDown(SDL_SCANCODE_W)) { force.y = -SPEED; }
-        if (input.GetKeyDown(SDL_SCANCODE_S)) { force.y = +SPEED; }
-
-        player.SetVelocity(player.GetVelocity() + (force * dt));
-        player.Update(dt, renderer.getWindowWidth(), renderer.getWindowHeight());
-
         // RENDER
-        renderer.SetColor(0, 0, 0); // Set render draw color to black
-        renderer.Clear(); // Clear the renderer 
+        g_engine.GetRenderer().SetColor(0, 0, 0); // Set render draw color to black
+        g_engine.GetRenderer().Clear(); // Clear the renderer 
 
         for (int index = 0; index < (int)(points.size()) - 1; index++) {
-            renderer.SetColorFloat(RandomFloat(), RandomFloat(), RandomFloat());
-            renderer.DrawLine(points[index].x, points[index].y, points[index + 1].x, points[index + 1].y);
+            g_engine.GetRenderer().SetColorFloat(RandomFloat(), RandomFloat(), RandomFloat());
+            g_engine.GetRenderer().DrawLine(points[index].x, points[index].y, points[index + 1].x, points[index + 1].y);
         }
 
-        player.Draw(renderer);
-        renderer.Present(); // Render the screen
+        player.Draw(g_engine.GetRenderer());
+        g_engine.GetRenderer().Present(); // Render the screen
     }
 
     // SHUTDOWN
-    renderer.ShutDown();
+    g_engine.Shutdown();
     return 0;
 }

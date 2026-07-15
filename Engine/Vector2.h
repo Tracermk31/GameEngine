@@ -1,4 +1,5 @@
 #pragma once
+
 #include <cmath>
 #include <cassert>
 
@@ -30,7 +31,7 @@ namespace ChiefEngine {
 		Vector2 Rotate(float radians) const {
 			Vector2 temp = {0.0f};
 			temp.x = this->x * std::cos(radians) - this->y * std::sin(radians);
-			temp.y = this->x * std::sin(radians) - this->y * std::cos(radians);
+			temp.y = this->x * std::sin(radians) + this->y * std::cos(radians);
 			return temp;
 		}
 

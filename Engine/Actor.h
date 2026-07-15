@@ -13,9 +13,8 @@ namespace ChiefEngine {
             m_model{ model } 
         { };
 
-        void Update(float dt, float maxY, float maxX);
-
-        void Draw(const class Renderer& renderer) const;
+        virtual void Update(float dt, float maxY, float maxX);
+        virtual void Draw(const class Renderer& renderer) const;
 
         inline const Transform& GetTransform() const { return this->m_transform; }
         void SetPosition(const Vector2& position) { m_transform.position = position; }
