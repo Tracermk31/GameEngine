@@ -4,7 +4,7 @@
 #include "Renderer.h"
 
 namespace ChiefEngine {
-    void Actor::Update(float dt, float maxY, float maxX) {
+    void Actor::Update(float dt, float maxX, float maxY) {
         m_transform.position += (m_velocity * dt);
 
         Math::Clamp(0.0f, maxX, m_transform.position.x);

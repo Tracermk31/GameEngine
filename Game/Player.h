@@ -2,12 +2,16 @@
 
 #include "Actor.h"
 
+struct PlayerDesc : public ChiefEngine::ActorDesc {
+	float speed;
+};
+
 class Player : public ChiefEngine::Actor {
 public:
 	Player() = default;
-	Player(const ChiefEngine::Transform& transform, float speed) :
-		Actor{ transform },
-		m_speed { speed }
+	Player(PlayerDesc playerDesc) :
+		Actor{ playerDesc },
+		m_speed { playerDesc.speed }
 	{}
 	Player(const ChiefEngine::Transform& transform, const ChiefEngine::Model& model, float speed) :
 		Actor{ transform, model },

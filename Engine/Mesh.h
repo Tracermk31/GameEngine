@@ -11,7 +11,7 @@ namespace ChiefEngine {
 		Mesh() = default;
 		Mesh(const std::vector<Vector2>& points, const Color& color) : 
 			m_points { points } 
-			, m_color{ color } 
+			,m_color{ color } 
 		{ }
 
 		void SetPoints(const std::vector<Vector2>& points) { m_points = points; }

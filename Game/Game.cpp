@@ -1,25 +1,63 @@
 #include "Engine.h"
 #include "Player.h"
+#include "Enemy.h"
+#include "Scene.h"
 
 using namespace ChiefEngine;
 
 float SCREEN_WIDTH = 1920.0f;
 float SCREEN_HEIGHT = 1200.0f;
-float SPEED = 1.0f;
 
 int main() {
     // INITIALIZATION
-    g_engine.Initialize();
+    g_engine.Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    Scene scene;
 
     std::vector<Vector2> points;
 
-    Model playerModel = std::vector<Mesh>{};
+    Model shipModel = std::vector<Mesh>{};
 
-    playerModel.AddMesh({ { Vector2{-3, 3,}, Vector2{ 3, 3 }, Vector2{0, 0}} , Color{255.0f, 255.0f, 255.0f} });
-    Player player(Transform{ Vector2{ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f }, 0.0f, 50.0f }, playerModel, 800.0f);
+    shipModel.AddMesh({ { Vector2{-1.5f, -1.0f,}, Vector2{ 1.5f, 0.0f }, Vector2{-1.5f, 1.0f}, Vector2{-1.5f, -1.0f} } , Color{255.0f, 255.0f, 255.0f} });
+    shipModel.AddMesh({ { Vector2 {-1.5f, -1.0f}, Vector2 {0.0f, -1.0f}, Vector2 {0.0f, -1.5f}, Vector2 {-1.5f, -1.5f}, Vector2 {-1.5f, -1.0f}}, Color{ 0.0f, 0.0f, 200.0f } });
+    shipModel.AddMesh({ { Vector2 {-1.5f, 1.0f}, Vector2 {0.0f, 1.0f}, Vector2 {0.0f, 1.5f}, Vector2 {-1.5f, 1.5f}, Vector2 {-1.5f, 1.0f}}, Color{ 0.0f, 0.0f, 200.0f } });
+
+    PlayerDesc playerDesc;
+    playerDesc.name = "Player";
+    playerDesc.tag = "1";
+    playerDesc.speed = 400.0f;
+    playerDesc.transform = Transform{ Vector2{ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f }, 0.0f, 50.0f };
+    playerDesc.model = shipModel;
+
+    Player* player = new Player(playerDesc);
+    scene.AddActor(player);
+
+    for (short index = 0; index < 10; index++) {
+        EnemyDesc enemyDesc;
+        enemyDesc.name = "Enemy";
+        enemyDesc.tag = "2";
+        enemyDesc.speed = 400.0f;
+        enemyDesc.transform = Transform{ Vector2{ RandomFloat(0, SCREEN_WIDTH), RandomFloat(0, SCREEN_HEIGHT)}, 0.0f, 20.0f };
+        enemyDesc.model = shipModel;
+
+        Enemy* enemy = new Enemy(enemyDesc);
+        scene.AddActor(enemy);
+    }
 
     SDL_Event event;
 
+    FMOD::Sound* sound = nullptr;
+
+    g_engine.GetAudio().CreateSound("test.wav", sound);
+    g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(0));
+    g_engine.GetAudio().ClearSounds();
+
+    g_engine.GetAudio().CreateSound("bass.wav", sound);
+    g_engine.GetAudio().CreateSound("clap.wav", sound);
+    g_engine.GetAudio().CreateSound("close-hat.wav", sound);
+    g_engine.GetAudio().CreateSound("cowbell.wav", sound);
+    g_engine.GetAudio().CreateSound("open-hat.wav", sound);
+    g_engine.GetAudio().CreateSound("snare.wav", sound);
     // MAIN LOOP
     bool running = true;
     while (running) {
@@ -38,8 +76,7 @@ int main() {
 
         float dt = g_engine.GetTime().getDeltaTime();
 
-        player.SetRotation(player.GetTransform().rotation + (90 * dt));
-        player.Update(dt, SCREEN_HEIGHT, SCREEN_WIDTH);
+        scene.Update(dt, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         // INPUT
         if (g_engine.GetInput().GetButtonDown(Input::MouseButton::LEFT)) {
@@ -60,6 +97,25 @@ int main() {
             }
         }
 
+        if (g_engine.GetInput().GetKeyPressed(SDL_SCANCODE_0)) {
+            g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(0));
+        }
+        if (g_engine.GetInput().GetKeyPressed(SDL_SCANCODE_1)) {
+            g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(1));
+        }
+        if (g_engine.GetInput().GetKeyPressed(SDL_SCANCODE_2)) {
+            g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(2));
+        }
+        if (g_engine.GetInput().GetKeyPressed(SDL_SCANCODE_3)) {
+            g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(3));
+        }
+        if (g_engine.GetInput().GetKeyPressed(SDL_SCANCODE_4)) {
+            g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(4));
+        }
+        if (g_engine.GetInput().GetKeyPressed(SDL_SCANCODE_5)) {
+            g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(5));
+        }
+
         // RENDER
         g_engine.GetRenderer().SetColor(0, 0, 0); // Set render draw color to black
         g_engine.GetRenderer().Clear(); // Clear the renderer 
@@ -69,7 +125,7 @@ int main() {
             g_engine.GetRenderer().DrawLine(points[index].x, points[index].y, points[index + 1].x, points[index + 1].y);
         }
 
-        player.Draw(g_engine.GetRenderer());
+        scene.Draw(g_engine.GetRenderer());
         g_engine.GetRenderer().Present(); // Render the screen
     }
 
