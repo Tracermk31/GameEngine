@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include "File.h"
 #include "Audio.h"
 #include "Actor.h"
 #include "Renderer.h"
@@ -16,8 +17,9 @@
 namespace ChiefEngine {
 	class Engine {
 	public:
-		Engine() = default;
-
+		Engine(const Engine&) = delete;
+		Engine& operator=(const Engine&) = delete;
+		static Engine& Get() { static Engine engine; return engine; }
 		bool Initialize(float screenWidth, float screenHeight);
 		void Shutdown();
 
@@ -28,11 +30,11 @@ namespace ChiefEngine {
 		Renderer& GetRenderer() { return m_renderer; }
 		Audio& GetAudio() { return m_audioSystem; }
 	private:
+		Engine() = default;
+
 		Time m_time;
 		Input m_input;
 		Renderer m_renderer;
 		Audio m_audioSystem;
 	};
-
-	extern Engine g_engine;
 }

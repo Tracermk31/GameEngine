@@ -9,8 +9,54 @@ float SCREEN_WIDTH = 1920.0f;
 float SCREEN_HEIGHT = 1200.0f;
 
 int main() {
+    // get current working directory
+    std::cout << "Directory Operations:\n";
+    std::cout << "Working directory: " << GetWorkingDirectory() << "\n";
+
+    // set working directory (current working directory + "Assets")
+    std::cout << "Setting directory to 'Assets'...\n";
+    SetWorkingDirectory("Assets");
+    std::cout << "New directory: " << GetWorkingDirectory() << "\n\n";
+
+    // get filenames in the working directory
+    std::cout << "Files in Directory:\n";
+    auto filenames = GetFilesInDirectory(GetWorkingDirectory());
+    for (const auto& filename : filenames) {
+        std::cout << filename << "\n";
+    }
+    std::cout << "\n";
+
+    // get filename info
+    if (!filenames.empty()) {
+        // get filename
+        std::string str = GetFilename(filenames[0]);
+        std::cout << "Filename: " << str << "\n";
+
+        // get extension
+        str = GetFileExtension(filenames[0]);
+        std::cout << "Extension: " << str << "\n";
+
+        // get filename no extension
+        str = GetFilenameNoExtension(filenames[0]);
+        std::cout << "Filename No Extension: " << str << "\n\n";
+    }
+
+    // read and display text file
+    std::cout << "Text File Reading:\n";
+    std::string str;
+    if (ReadTextFile("test.txt", str)) {
+        std::cout << str << "\n";
+    }
+
+    // write to text file
+    std::cout << "Text File Writing:\n";
+    WriteTextFile("test.txt", "Hello, World!", true);
+    if (ReadTextFile("test.txt", str)) {
+        std::cout << str << "\n";
+    }
+
     // INITIALIZATION
-    g_engine.Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    Engine::Get().Initialize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
     Scene scene;
 
@@ -44,21 +90,21 @@ int main() {
         scene.AddActor(enemy);
     }
 
-    SDL_Event event;
-
     FMOD::Sound* sound = nullptr;
 
-    g_engine.GetAudio().CreateSound("test.wav", sound);
-    g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(0));
-    g_engine.GetAudio().ClearSounds();
+    Engine::Get().GetAudio().CreateSound("test.wav", sound);
+    Engine::Get().GetAudio().PlaySound(Engine::Get().GetAudio().GetSoundAtIndex(0));
+    Engine::Get().GetAudio().ClearSounds();
 
-    g_engine.GetAudio().CreateSound("bass.wav", sound);
-    g_engine.GetAudio().CreateSound("clap.wav", sound);
-    g_engine.GetAudio().CreateSound("close-hat.wav", sound);
-    g_engine.GetAudio().CreateSound("cowbell.wav", sound);
-    g_engine.GetAudio().CreateSound("open-hat.wav", sound);
-    g_engine.GetAudio().CreateSound("snare.wav", sound);
+    Engine::Get().GetAudio().CreateSound("bass.wav", sound);
+    Engine::Get().GetAudio().CreateSound("clap.wav", sound);
+    Engine::Get().GetAudio().CreateSound("close-hat.wav", sound);
+    Engine::Get().GetAudio().CreateSound("cowbell.wav", sound);
+    Engine::Get().GetAudio().CreateSound("open-hat.wav", sound);
+    Engine::Get().GetAudio().CreateSound("snare.wav", sound);
+
     // MAIN LOOP
+    SDL_Event event;
     bool running = true;
     while (running) {
 
@@ -72,64 +118,64 @@ int main() {
             }
         }
 
-        g_engine.Update();
+        float dt = Engine::Get().GetTime().getDeltaTime();
 
-        float dt = g_engine.GetTime().getDeltaTime();
+        Engine::Get().Update();
 
         scene.Update(dt, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         // INPUT
-        if (g_engine.GetInput().GetButtonDown(Input::MouseButton::LEFT)) {
+        if (Engine::Get().GetInput().GetButtonDown(Input::MouseButton::LEFT)) {
             if (points.empty()) {
-                points.push_back(g_engine.GetInput().GetMousePosition());
+                points.push_back(Engine::Get().GetInput().GetMousePosition());
             }
             else {
-                Vector2 temp = points.back() - g_engine.GetInput().GetMousePosition();
+                Vector2 temp = points.back() - Engine::Get().GetInput().GetMousePosition();
                 if (temp.Length() > 30.0) {
-                    points.push_back(g_engine.GetInput().GetMousePosition());
+                    points.push_back(Engine::Get().GetInput().GetMousePosition());
                 }
             }
         }
 
-        if (g_engine.GetInput().GetButtonPressed(Input::MouseButton::RIGHT)) {
+        if (Engine::Get().GetInput().GetButtonPressed(Input::MouseButton::RIGHT)) {
             if (!points.empty()) {
                 points.pop_back();
             }
         }
 
-        if (g_engine.GetInput().GetKeyPressed(SDL_SCANCODE_0)) {
-            g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(0));
+        if (Engine::Get().GetInput().GetKeyPressed(SDL_SCANCODE_0)) {
+            Engine::Get().GetAudio().PlaySound(Engine::Get().GetAudio().GetSoundAtIndex(0));
         }
-        if (g_engine.GetInput().GetKeyPressed(SDL_SCANCODE_1)) {
-            g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(1));
+        if (Engine::Get().GetInput().GetKeyPressed(SDL_SCANCODE_1)) {
+            Engine::Get().GetAudio().PlaySound(Engine::Get().GetAudio().GetSoundAtIndex(1));
         }
-        if (g_engine.GetInput().GetKeyPressed(SDL_SCANCODE_2)) {
-            g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(2));
+        if (Engine::Get().GetInput().GetKeyPressed(SDL_SCANCODE_2)) {
+            Engine::Get().GetAudio().PlaySound(Engine::Get().GetAudio().GetSoundAtIndex(2));
         }
-        if (g_engine.GetInput().GetKeyPressed(SDL_SCANCODE_3)) {
-            g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(3));
+        if (Engine::Get().GetInput().GetKeyPressed(SDL_SCANCODE_3)) {
+            Engine::Get().GetAudio().PlaySound(Engine::Get().GetAudio().GetSoundAtIndex(3));
         }
-        if (g_engine.GetInput().GetKeyPressed(SDL_SCANCODE_4)) {
-            g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(4));
+        if (Engine::Get().GetInput().GetKeyPressed(SDL_SCANCODE_4)) {
+            Engine::Get().GetAudio().PlaySound(Engine::Get().GetAudio().GetSoundAtIndex(4));
         }
-        if (g_engine.GetInput().GetKeyPressed(SDL_SCANCODE_5)) {
-            g_engine.GetAudio().PlaySound(g_engine.GetAudio().GetSoundAtIndex(5));
+        if (Engine::Get().GetInput().GetKeyPressed(SDL_SCANCODE_5)) {
+            Engine::Get().GetAudio().PlaySound(Engine::Get().GetAudio().GetSoundAtIndex(5));
         }
 
         // RENDER
-        g_engine.GetRenderer().SetColor(0, 0, 0); // Set render draw color to black
-        g_engine.GetRenderer().Clear(); // Clear the renderer 
+        Engine::Get().GetRenderer().SetColor(0, 0, 0); // Set render draw color to black
+        Engine::Get().GetRenderer().Clear(); // Clear the renderer 
 
         for (int index = 0; index < (int)(points.size()) - 1; index++) {
-            g_engine.GetRenderer().SetColorFloat(RandomFloat(), RandomFloat(), RandomFloat());
-            g_engine.GetRenderer().DrawLine(points[index].x, points[index].y, points[index + 1].x, points[index + 1].y);
+            Engine::Get().GetRenderer().SetColorFloat(RandomFloat(), RandomFloat(), RandomFloat());
+            Engine::Get().GetRenderer().DrawLine(points[index].x, points[index].y, points[index + 1].x, points[index + 1].y);
         }
 
-        scene.Draw(g_engine.GetRenderer());
-        g_engine.GetRenderer().Present(); // Render the screen
+        scene.Draw(Engine::Get().GetRenderer());
+        Engine::Get().GetRenderer().Present(); // Render the screen
     }
 
     // SHUTDOWN
-    g_engine.Shutdown();
+    Engine::Get().Shutdown();
     return 0;
 }

@@ -2,9 +2,12 @@
 
 #include "Transform.h"
 #include "Model.h"
+
 #include <string>
 
 namespace ChiefEngine {
+    class Scene;
+
     struct ActorDesc {
         std::string name;
         std::string tag;
@@ -42,11 +45,15 @@ namespace ChiefEngine {
         void SetVelocity(const Vector2& velocity) { m_velocity = velocity; }
         void AddVelocity(const Vector2& velocity) { m_velocity += velocity; }
 
+        Scene* GetScene() { return m_scene; }
+
+        friend Scene;
     protected:
         std::string m_name;
         std::string m_tag;
         Transform m_transform;
         Vector2 m_velocity = { 0.0f };
         Model m_model;
+        Scene* m_scene = nullptr;
     };
 }

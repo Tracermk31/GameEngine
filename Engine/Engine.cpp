@@ -5,7 +5,6 @@
 #include <iostream>
 
 namespace ChiefEngine {
-	Engine g_engine;
 	bool Engine::Initialize(float screenWidth, float screenHeight) {
 		m_renderer.Initialize("Chief Engine", (short)screenWidth, (short)screenHeight);
 		m_input.Initialize();

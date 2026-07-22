@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Actor.h"
+#include "Scene.h"
 
 struct EnemyDesc : public ChiefEngine::ActorDesc {
 float speed;

@@ -6,6 +6,7 @@
 namespace ChiefEngine {
     void Actor::Update(float dt, float maxX, float maxY) {
         m_transform.position += (m_velocity * dt);
+        m_velocity *= 0.987f;
 
         Math::Clamp(0.0f, maxX, m_transform.position.x);
         Math::Clamp(0.0f, maxY, m_transform.position.y);
